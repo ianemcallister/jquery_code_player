@@ -40,7 +40,7 @@
 	}
 
 	#toggles {
-		width: 250px;
+		width: 202px;
 		margin: 0 auto;
 		list-style: none;
 		border: 1px solid gray;
@@ -69,10 +69,11 @@
 	}
 
 	.codeContainer textarea {
-		width: 100%;
+		width: 99%;
 		height: 100%;
 		border: none;
 		border-right: 1px solid gray;
+		box-sizing: border-box;
 		font-family: monotype;
 		font-size: 90%;
 		padding: 5px;
@@ -84,7 +85,7 @@
 		top: 10px;
 	}
 
-	#cssContainer, #jsContainer {
+	#CSSContainer, #JSContainer {
 		display: none;
 	}
 
@@ -93,6 +94,10 @@
 		position: relative;
 		left: 20px;
 		border: none;
+	}
+
+	.selected {
+		background-color: gray;
 	}
 </style>
 
@@ -107,33 +112,33 @@
 				<button id="run_button">Run</button>
 			</div>
 			<ul id="toggles">
-				<li>HTML</li>
-				<li>CSS</li>
-				<li>JavaScript</li>
-				<li style="border: none">Result</li>
+				<li class="toggle selected">HTML</li>
+				<li class="toggle">CSS</li>
+				<li class="toggle">JS</li>
+				<li class="toggle selected" style="border: none">Result</li>
 			</ul>
 		</div>
 
 		<div class="clear"></div>
 
-		<div class="codeContainer" id="htmlContainer">
+		<div class="codeContainer" id="HTMLContainer">
 			<div class="codeLabel">HTML</div>
-			<textarea>Example Code</textarea>
+			<textarea id="htmlCode"><div id="test"></div></textarea>
 		</div>
 
-		<div class="codeContainer" id="cssContainer">
+		<div class="codeContainer" id="CSSContainer">
 			<div class="codeLabel">CSS</div>
-			<textarea>Example Code</textarea>
+			<textarea id="cssCode">html {background-color: blue;} </textarea>
 		</div>
 
-		<div class="codeContainer" id="jsContainer">
+		<div class="codeContainer" id="JSContainer">
 			<div class="codeLabel">JS</div>
-			<textarea>Example Code</textarea>
+			<textarea id="jsCode">document.getElementById("test").innerHTML="it's working";</textarea>
 		</div>
 
-		<div class="codeContainer" id="resultContainer">
-			<div class="codeLabel">Results</div>
-			<iframe></iframe>
+		<div class="codeContainer" id="ResultContainer">
+			<div class="codeLabel">Result</div>
+			<iframe id="resultFrame"></iframe>
 		</div>
 
 	</div>
@@ -146,6 +151,35 @@
 	var codeContainerHeight = windowHeight - menubarHeight;
 
 	$(".codeContainer").height(codeContainerHeight+"px");
+
+	$(".toggle").click(function() {
+		$(this).toggleClass("selected");
+
+		var activeDiv=$(this).html();
+
+		$("#"+activeDiv+"Container").toggle();
+
+		var showingDivs=$(".codeContainer").filter(function () {
+			return($(this).css("display") != "none");
+		}).length;
+
+		//alert(showingDivs);
+		var width = 100 / showingDivs;
+
+		$(".codeContainer").width(width+"%");
+		
+	});
+
+	$("#run_button").click(function() {
+		$("iframe").contents().find("html").html('<style>' + 
+												 $("#cssCode").val() +
+												 '</style>' + 
+												 $("#htmlCode").val());
+
+		document.getElementById("resultFrame").contentWindow.eval($("#jsCode").val());
+
+	});
+
 </script>
 
 </body>
